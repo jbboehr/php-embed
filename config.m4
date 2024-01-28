@@ -47,6 +47,7 @@ if test "$PHP_EMBED" != "no"; then
     PHP_INSTALL_HEADERS([ext/embed], [php_embed.h])
     PHP_NEW_EXTENSION(embed, $PHP_EMBED_SOURCES, $ext_shared, -DZEND_ENABLE_STATIC_TSRMLS_CACHE=1)
     PHP_ADD_EXTENSION_DEP(embed, json, false)
-    #PHP_ADD_EXTENSION_DEP(embed, ast, true)
+    PHP_ADD_EXTENSION_DEP(embed, ast, true)
+    PHP_ADD_EXTENSION_DEP(embed, opcache, true)
     PHP_SUBST(EMBED_SHARED_LIBADD)
 fi

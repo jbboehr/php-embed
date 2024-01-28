@@ -34,6 +34,7 @@
     flake-utils.lib.eachDefaultSystem (
       system: let
         pkgs = nixpkgs.legacyPackages.${system};
+        lib = pkgs.lib;
 
         src' = gitignore.lib.gitignoreSource ./.;
 
@@ -67,7 +68,7 @@
               enabled,
               all,
             }:
-              enabled ++ [all.ast];
+              enabled ++ [all.ast all.opcache];
           };
 
         makePackage = php': let
@@ -118,10 +119,14 @@
             ];
             shellHook = ''
               ${pre-commit-check.shellHook}
-              ln -sf ${package.php.unwrapped.dev}/include/php/ .direnv/php-include
+              #ln -sf ${package.php.unwrapped.dev}/include/php/ .direnv/php-include
               export REPORT_EXIT_STATUS=1
               export NO_INTERACTION=1
               export PATH="$PWD/vendor/bin:$PATH"
+              # there has got to be a better way to do this - opcache isn't getting loaded
+              # for tests because tests are run with '-n' and nixos doesn't compile
+              # in opcache and relies on mkWrapper to load extensions
+              export TESTS='-c ${package.php.phpIni}'
             '';
           })
         packages;

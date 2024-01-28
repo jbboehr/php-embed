@@ -198,8 +198,9 @@ PHP_GINIT_FUNCTION(embed)
 const zend_function_entry embed_functions[] = {PHP_FE(embed, embed_arginfo) PHP_FE_END};
 
 static const zend_module_dep embed_deps[] = {
-    {"json", NULL, NULL, MODULE_DEP_REQUIRED},
-    {"ast",  NULL, NULL, MODULE_DEP_OPTIONAL},
+    {"json",    NULL, NULL, MODULE_DEP_REQUIRED},
+    {"ast",     NULL, NULL, MODULE_DEP_OPTIONAL},
+    {"opcache", NULL, NULL, MODULE_DEP_OPTIONAL},
     ZEND_MOD_END,
 };
 
