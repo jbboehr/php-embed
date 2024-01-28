@@ -111,11 +111,14 @@
               actionlint
               clang-tools
               lcov
+              gdb
               package.php
               package.php.packages.composer
+              valgrind
             ];
             shellHook = ''
               ${pre-commit-check.shellHook}
+              ln -sf ${package.php.unwrapped.dev}/include/php/ .direnv/php-include
               export REPORT_EXIT_STATUS=1
               export NO_INTERACTION=1
               export PATH="$PWD/vendor/bin:$PATH"
