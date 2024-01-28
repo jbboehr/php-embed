@@ -1,9 +1,10 @@
 --TEST--
-require
+constant
 --EXTENSIONS--
 embed
 --FILE--
 <?php
-var_dump(require __DIR__ . "/sample.inc");
+const TEST = embed("sample.txt");
+var_dump(TEST);
 --EXPECT--
 string(6) "foobar"

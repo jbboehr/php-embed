@@ -1,7 +1,7 @@
 --TEST--
 file-is-read-only-once
---SKIPIF--
-<?php if( !extension_loaded('embed') ) die('skip '); ?>
+--EXTENSIONS--
+embed
 --FILE--
 <?php
 file_put_contents(__DIR__ . "/file-is-only-read-once.txt", "barbat");

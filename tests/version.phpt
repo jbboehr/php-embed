@@ -1,7 +1,7 @@
 --TEST--
 version
---SKIPIF--
-<?php if( !extension_loaded('embed') ) die('skip '); ?>
+--EXTENSIONS--
+embed
 --FILE--
 <?php
 var_dump(EmbedExt\VERSION);

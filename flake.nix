@@ -3,6 +3,7 @@
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-22.11";
+    nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
     flake-utils = {
       url = "github:numtide/flake-utils";
     };
@@ -26,6 +27,7 @@
   outputs = {
     self,
     nixpkgs,
+    nixpkgs-unstable,
     flake-utils,
     gitignore,
     pre-commit-hooks,
@@ -34,6 +36,7 @@
     flake-utils.lib.eachDefaultSystem (
       system: let
         pkgs = nixpkgs.legacyPackages.${system};
+        pkgs-unstable = nixpkgs-unstable.legacyPackages.${system};
         lib = pkgs.lib;
 
         src' = gitignore.lib.gitignoreSource ./.;
@@ -102,6 +105,7 @@
         packages = rec {
           php81 = makePackage pkgs.php81;
           php82 = makePackage pkgs.php82;
+          php83 = makePackage pkgs-unstable.php83;
           default = php81;
         };
 
@@ -135,6 +139,7 @@
           inherit pre-commit-check;
           php81 = makeCheck packages.php81;
           php82 = makeCheck packages.php82;
+          php83 = makeCheck packages.php83;
         };
 
         formatter = pkgs.alejandra;

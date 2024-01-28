@@ -1,7 +1,7 @@
 --TEST--
 eval
---SKIPIF--
-<?php if( !extension_loaded('embed') ) die('skip '); ?>
+--EXTENSIONS--
+embed
 --FILE--
 <?php
 var_dump(eval('return embed("sample.txt");'));

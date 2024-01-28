@@ -17,6 +17,7 @@ buildPecl rec {
 
   makeFlags = ["phpincludedir=$(out)/include/php"];
 
-  checkTarget = "test";
-  checkFlags = ["REPORT_EXIT_STATUS=1" "NO_INTERACTION=1"];
+  TEST_PHP_DETAILED = 1;
+  NO_INTERACTION = 1;
+  REPORT_EXIT_STATUS = 1;
 }
