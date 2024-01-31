@@ -127,10 +127,9 @@
               export REPORT_EXIT_STATUS=1
               export NO_INTERACTION=1
               export PATH="$PWD/vendor/bin:$PATH"
-              # there has got to be a better way to do this - opcache isn't getting loaded
-              # for tests because tests are run with '-n' and nixos doesn't compile
+              # opcache isn't getting loaded for tests because tests are run with '-n' and nixos doesn't compile
               # in opcache and relies on mkWrapper to load extensions
-              export TESTS='-c ${package.php.phpIni}'
+              export TEST_PHP_ARGS='-c ${package.php.phpIni}'
             '';
           })
         packages;
