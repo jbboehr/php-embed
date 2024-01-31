@@ -24,7 +24,7 @@ jobs:
                     - "8.2"
                     - "8.3"
         steps:
-            - uses: actions/checkout@v3
+            - uses: actions/checkout@v4
 
             - name: Install PHP
               uses: shivammathur/setup-php@v2
@@ -52,7 +52,7 @@ jobs:
                     - "8.2"
                     - "8.3"
         steps:
-            - uses: actions/checkout@v3
+            - uses: actions/checkout@v4
 
             - name: Install Pkgs
               uses: awalsh128/cache-apt-pkgs-action@latest
@@ -90,7 +90,7 @@ jobs:
     nix:
         runs-on: ubuntu-latest
         steps:
-            - uses: actions/checkout@v3
+            - uses: actions/checkout@v4
 
             - name: Set Up Build Cache
               uses: actions/cache@v3
