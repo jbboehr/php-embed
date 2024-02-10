@@ -43,11 +43,11 @@
         "pre-commit-hooks": "pre-commit-hooks"
       },
       "locked": {
-        "lastModified": 1707534215,
-        "narHash": "sha256-hwVSdRsextoBr0Icru1Reui2Zn72OjKK0uoIIRo58iI=",
+        "lastModified": 1707600106,
+        "narHash": "sha256-qq9u3SAak+RGRCbLzftJ1wZxjRWWEplAfMSEGMj+QtY=",
         "owner": "jbboehr",
         "repo": "php-vyrtue",
-        "rev": "33bebca8969ee86069ed9ba6c1b838118ca8b1cc",
+        "rev": "47f201b04faec59df7a7707ba2464400963089e3",
         "type": "github"
       },
       "original": {
@@ -167,11 +167,11 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1707347730,
-        "narHash": "sha256-0etC/exQIaqC9vliKhc3eZE2Mm2wgLa0tj93ZF/egvM=",
+        "lastModified": 1707514827,
+        "narHash": "sha256-Y+wqFkvikpE1epCx57PsGw+M1hX5aY5q/xgk+ebDwxI=",
         "owner": "nixos",
         "repo": "nixpkgs",
-        "rev": "6832d0d99649db3d65a0e15fa51471537b2c56a6",
+        "rev": "20f65b86b6485decb43c5498780c223571dd56ef",
         "type": "github"
       },
       "original": {
