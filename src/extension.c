@@ -77,8 +77,8 @@ zend_string *embed_file2string(zend_string *dir, zend_string *file)
     return contents;
 }
 
-ZEND_BEGIN_ARG_INFO_EX(embed_arginfo, ZEND_SEND_BY_VAL, 0, 1)
-ZEND_ARG_TYPE_INFO(0, path, IS_STRING, 0)
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO(embed_arginfo, IS_STRING, 0)
+    ZEND_ARG_TYPE_INFO(0, path, IS_STRING, 0)
 ZEND_END_ARG_INFO()
 
 PHP_FUNCTION(embed)
@@ -86,7 +86,7 @@ PHP_FUNCTION(embed)
     zend_string *path;
 
     ZEND_PARSE_PARAMETERS_START(1, 1)
-    Z_PARAM_STR(path)
+        Z_PARAM_STR(path)
     ZEND_PARSE_PARAMETERS_END();
 
     // This function is never intended to actually be called
@@ -112,12 +112,16 @@ PHP_FUNCTION(embed)
     }
 }
 
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO(embed_json_arginfo, IS_MIXED, 0)
+    ZEND_ARG_TYPE_INFO(0, path, IS_STRING, 0)
+ZEND_END_ARG_INFO()
+
 PHP_FUNCTION(embed_json)
 {
     zend_string *path;
 
     ZEND_PARSE_PARAMETERS_START(1, 1)
-    Z_PARAM_STR(path)
+        Z_PARAM_STR(path)
     ZEND_PARSE_PARAMETERS_END();
 
     // This function is never intended to actually be called
@@ -214,7 +218,13 @@ static PHP_GINIT_FUNCTION(embed)
     memset(embed_globals, 0, sizeof(zend_embed_globals));
 }
 
-const zend_function_entry embed_functions[] = {PHP_FE(embed, embed_arginfo) PHP_FE_END};
+// clang-format off
+const zend_function_entry embed_functions[] = {
+    ZEND_RAW_FENTRY("EmbedExt\\embed", ZEND_FN(embed), embed_arginfo, 0)
+    ZEND_RAW_FENTRY("EmbedExt\\embed_json", ZEND_FN(embed_json), embed_json_arginfo, 0)
+    PHP_FE_END
+};
+// clang-format on
 
 static const zend_module_dep embed_deps[] = {
     {"json",    NULL, NULL, MODULE_DEP_REQUIRED},
