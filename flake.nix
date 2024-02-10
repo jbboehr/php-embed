@@ -21,6 +21,10 @@
       url = "github:nikic/php-ast";
       flake = false;
     };
+    ext-vyrtue = {
+      url = "github:jbboehr/php-vyrtue";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = {
@@ -30,6 +34,7 @@
     gitignore,
     pre-commit-hooks,
     ext-ast,
+    ext-vyrtue,
   } @ args:
     flake-utils.lib.eachDefaultSystem (
       system: let
@@ -59,7 +64,10 @@
           };
         };
 
-        makePhp = php:
+        makePhp = {
+          php,
+          vyrtue,
+        }:
           php.buildEnv {
             extraConfig = ''
               include_path = .:${ext-ast}/
@@ -68,15 +76,19 @@
               enabled,
               all,
             }:
-              enabled ++ [all.ast all.opcache];
+              enabled ++ [all.ast all.opcache vyrtue];
           };
 
-        makePackage = php': let
-          php = makePhp php';
-        in
+        makePackage = {
+          php,
+          vyrtue,
+        }:
           pkgs.callPackage ./derivation.nix {
+            php = makePhp {
+              inherit php vyrtue;
+            };
             inherit (php) buildPecl;
-            inherit src php;
+            inherit src vyrtue;
           };
 
         makeCheck = package:
@@ -98,15 +110,8 @@
             shellcheck.enable = true;
           };
         };
-      in rec {
-        packages = rec {
-          php81 = makePackage pkgs.php81;
-          php82 = makePackage pkgs.php82;
-          php83 = makePackage pkgs.php83;
-          default = php81;
-        };
 
-        devShells = pkgs.lib.mapAttrs (k: package:
+        mkDevShell = package:
           pkgs.mkShell {
             inputsFrom = [package];
             buildInputs = with pkgs; [
@@ -128,8 +133,30 @@
               # in opcache and relies on mkWrapper to load extensions
               export TEST_PHP_ARGS='-c ${package.php.phpIni}'
             '';
-          })
-        packages;
+          };
+      in rec {
+        packages = rec {
+          php81 = makePackage {
+            php = pkgs.php81;
+            vyrtue = ext-vyrtue.packages.${system}.php81;
+          };
+          php82 = makePackage {
+            php = pkgs.php82;
+            vyrtue = ext-vyrtue.packages.${system}.php82;
+          };
+          php83 = makePackage {
+            php = pkgs.php83;
+            vyrtue = ext-vyrtue.packages.${system}.php83;
+          };
+          default = php81;
+        };
+
+        devShells = rec {
+          php81 = mkDevShell packages.php81;
+          php82 = mkDevShell packages.php82;
+          php83 = mkDevShell packages.php83;
+          default = php81;
+        };
 
         checks = {
           inherit pre-commit-check;

@@ -4,6 +4,7 @@ constant
 embed
 --FILE--
 <?php
+use function EmbedExt\embed;
 const TEST = embed("sample.txt");
 var_dump(TEST);
 --EXPECT--

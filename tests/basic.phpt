@@ -4,6 +4,8 @@ basic
 embed
 --FILE--
 <?php
+use function EmbedExt\embed;
+use function EmbedExt\embed_json;
 var_dump(embed("sample.txt"));
 var_dump(embed_json("sample.json"));
 --EXPECT--

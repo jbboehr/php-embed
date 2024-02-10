@@ -5,6 +5,7 @@
   autoreconfHook,
   buildPecl,
   src,
+  vyrtue,
 }:
 buildPecl rec {
   pname = "embed";
@@ -13,9 +14,14 @@ buildPecl rec {
 
   inherit src;
 
-  passthru.php = php;
+  internalDeps = [vyrtue];
+  buildInputs = [vyrtue];
 
-  makeFlags = ["phpincludedir=$(out)/include/php"];
+  passthru.php = php;
+  passthru.vyrtue = vyrtue;
+
+  makeFlags = ["phpincludedir=$(dev)/include"];
+  outputs = ["out" "dev"];
 
   #TEST_PHP_DETAILED = 1;
   NO_INTERACTION = 1;

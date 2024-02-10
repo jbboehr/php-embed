@@ -4,8 +4,8 @@ eval
 embed
 --FILE--
 <?php
-var_dump(eval('return embed("sample.txt");'));
-var_dump(eval('return embed_json("sample.json");'));
+var_dump(eval('use function EmbedExt\embed; return embed("sample.txt");'));
+var_dump(eval('use function EmbedExt\embed_json; return embed_json("sample.json");'));
 --EXPECT--
 string(6) "foobar"
 array(2) {

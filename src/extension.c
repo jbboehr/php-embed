@@ -1,3 +1,21 @@
+/**
+ * Copyright (C) 2024 John Boehr & contributors
+ *
+ * This file is part of php-vyrtue.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -18,27 +36,16 @@
 #include "ext/standard/info.h"
 #include "ext/standard/php_string.h"
 #include "ext/json/php_json.h"
+#include "ext/vyrtue/php_vyrtue.h"
 
 #include "php_embed.h"
 
 ZEND_DECLARE_MODULE_GLOBALS(embed);
 
-static void (*original_ast_process)(zend_ast *ast) = NULL;
-
-void embed_ast_process_file(zend_ast *ast);
-
 PHP_INI_BEGIN()
 PHP_INI_END()
 
-EMBED_PUBLIC zend_never_inline void embed_ast_process(zend_ast *ast)
-{
-    if (NULL != original_ast_process) {
-        original_ast_process(ast);
-    }
-
-    embed_ast_process_file(ast);
-}
-
+EMBED_LOCAL
 zend_string *embed_file2string(zend_string *dir, zend_string *file)
 {
     zend_string *filepath =
@@ -153,19 +160,30 @@ static PHP_RINIT_FUNCTION(embed)
     return SUCCESS;
 }
 
+EMBED_LOCAL
+zend_ast *embed_call_embed_visitor_leave(zend_ast *ast, struct vyrtue_preprocess_context *ctx);
+
+EMBED_LOCAL
+zend_ast *embed_call_embed_json_visitor_leave(zend_ast *ast, struct vyrtue_preprocess_context *ctx);
+
 static PHP_MINIT_FUNCTION(embed)
 {
     int flags = CONST_CS | CONST_PERSISTENT;
+    zend_string *tmp;
 
     REGISTER_INI_ENTRIES();
 
     // Register constants
     REGISTER_STRING_CONSTANT("EmbedExt\\VERSION", (char *) PHP_EMBED_VERSION, flags);
 
-    if (NULL == original_ast_process) {
-        original_ast_process = zend_ast_process;
-        zend_ast_process = embed_ast_process;
-    }
+    // Register vyrtue visitors
+    tmp = zend_string_init_interned(ZEND_STRL("EmbedExt\\embed"), 1);
+    vyrtue_register_function_visitor("embed", tmp, NULL, embed_call_embed_visitor_leave);
+    zend_string_release(tmp);
+
+    tmp = zend_string_init_interned(ZEND_STRL("EmbedExt\\embed_json"), 1);
+    vyrtue_register_function_visitor("embed", tmp, NULL, embed_call_embed_json_visitor_leave);
+    zend_string_release(tmp);
 
     return SUCCESS;
 }
@@ -183,11 +201,12 @@ static PHP_MINFO_FUNCTION(embed)
     php_info_print_table_row(2, "Version", PHP_EMBED_VERSION);
     php_info_print_table_row(2, "Released", PHP_EMBED_RELEASE);
     php_info_print_table_row(2, "Authors", PHP_EMBED_AUTHORS);
+    php_info_print_table_end();
 
     DISPLAY_INI_ENTRIES();
 }
 
-PHP_GINIT_FUNCTION(embed)
+static PHP_GINIT_FUNCTION(embed)
 {
 #if defined(COMPILE_DL_EMBED) && defined(ZTS)
     ZEND_TSRMLS_CACHE_UPDATE();
@@ -199,6 +218,7 @@ const zend_function_entry embed_functions[] = {PHP_FE(embed, embed_arginfo) PHP_
 
 static const zend_module_dep embed_deps[] = {
     {"json",    NULL, NULL, MODULE_DEP_REQUIRED},
+    {"vyrtue",  NULL, NULL, MODULE_DEP_REQUIRED},
     {"ast",     NULL, NULL, MODULE_DEP_OPTIONAL},
     {"opcache", NULL, NULL, MODULE_DEP_OPTIONAL},
     ZEND_MOD_END,
@@ -229,12 +249,3 @@ ZEND_TSRMLS_CACHE_DEFINE()
 #endif
 ZEND_GET_MODULE(embed) // Common for all PHP extensions which are build as shared modules
 #endif
-
-/*
- * Local variables:
- * tab-width: 4
- * c-basic-offset: 4
- * End:
- * vim600: fdm=marker
- * vim: et sw=4 ts=4
- */
