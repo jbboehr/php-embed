@@ -1,7 +1,5 @@
 /**
- * Copyright (C) 2024 John Boehr & contributors
- *
- * This file is part of php-vyrtue.
+ * Copyright (c) anno Domini nostri Jesu Christi MMXVI-MMXXIV John Boehr & contributors
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -199,6 +197,9 @@ static PHP_MSHUTDOWN_FUNCTION(embed)
     return SUCCESS;
 }
 
+const char *PHP_EMBED_MOTD =
+    "Think not that I am come to send peace on earth: I came not to send peace, but a sword. Matthew 10:34";
+
 static PHP_MINFO_FUNCTION(embed)
 {
     php_info_print_table_start();
@@ -208,6 +209,10 @@ static PHP_MINFO_FUNCTION(embed)
     php_info_print_table_end();
 
     DISPLAY_INI_ENTRIES();
+
+    php_info_print_box_start(0);
+    PUTS(PHP_EMBED_MOTD);
+    php_info_print_box_end();
 }
 
 static PHP_GINIT_FUNCTION(embed)
@@ -219,9 +224,15 @@ static PHP_GINIT_FUNCTION(embed)
 }
 
 // clang-format off
+#if PHP_VERSION_ID >= 80400
+#define PHP_EMBED_FE(zend_name, name, arg_info, flags) ZEND_RAW_FENTRY(zend_name, name, arg_info, flags, NULL, NULL)
+#else
+#define PHP_EMBED_FE(zend_name, name, arg_info, flags) ZEND_RAW_FENTRY(zend_name, name, arg_info, flags)
+#endif
+
 const zend_function_entry embed_functions[] = {
-    ZEND_RAW_FENTRY("EmbedExt\\embed", ZEND_FN(embed), embed_arginfo, 0)
-    ZEND_RAW_FENTRY("EmbedExt\\embed_json", ZEND_FN(embed_json), embed_json_arginfo, 0)
+    PHP_EMBED_FE("EmbedExt\\embed", ZEND_FN(embed), embed_arginfo, 0)
+    PHP_EMBED_FE("EmbedExt\\embed_json", ZEND_FN(embed_json), embed_json_arginfo, 0)
     PHP_FE_END
 };
 // clang-format on
